@@ -9,6 +9,7 @@ Created on Tue Sep 21 18:26:47 2021
 import random
 from unicodedata import normalize
 
+# Teste para github
 
 def sorteio_palavra(lista_palavras):    
     # print(conteudo_lista)
