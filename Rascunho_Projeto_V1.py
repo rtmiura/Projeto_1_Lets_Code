@@ -20,7 +20,7 @@ def sorteio_palavra(lista_palavras):
     while len(palavra_secreta)<=2:
         palavra_secreta=random.choice(lista_palavras)
         
-    #return palavra_secreta
+    return palavra_secreta
 
 
 def remover_acentos(txt):
