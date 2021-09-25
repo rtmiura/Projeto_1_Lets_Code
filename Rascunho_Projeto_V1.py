@@ -33,9 +33,16 @@ def tratamento(palavra):
     palavra=palavra.replace(' ','-')
     return palavra
 
+def tratamento_letra(letra,Palavra_secreta):    
+    if letra.upper()=='Ç':
+        if not('Ç' in Palavra_secreta.upper()):
+            return letra.upper().strip()
+    else:
+        return tratamento(letra)
+
 def validade_letra_jogador(letra):
     if len(letra)>1:
-        print(f'Você cometeu um erro. {letra} tem de um caracter digitado--> ')
+        print(f'Você cometeu um erro. {letra} tem mais de um caracter digitado--> ')
         return False
     if not letra.isalpha():
         print(f'Você cometeu um erro. {letra} não é uma letra-> ')
@@ -43,14 +50,89 @@ def validade_letra_jogador(letra):
     
     return True
 
+def esconde_palavra(palavra):
+    lista_nova_palavra=[]
+    contador=0
+    for letra in palavra:
+        if letra.isalpha():
+            lista_nova_palavra.append('*')
+            contador+=1
+        else:
+            lista_nova_palavra.append(letra)
+    nova_palavra=''.join(lista_nova_palavra)
+    return nova_palavra, contador
 
+def desenho_erros(tentativa):
+    print("  ________    ")
+    print(" |/      |    ")
+
+    if(tentativa == 6):
+        print(" |      (o)   ")
+        print(" |            ")
+        print(" |            ")
+        print(" |            ")
+
+    if(tentativa == 5):
+        print(" |      (o)   ")
+        print(" |       |     ")
+        print(" |            ")
+        print(" |            ")
+
+    if(tentativa == 4):
+        print(" |      (o)   ")
+        print(" |      \|    ")
+        print(" |            ")
+        print(" |            ")
+
+    if(tentativa == 3):
+        print(" |      (o)   ")
+        print(" |      \|/   ")
+        print(" |            ")
+        print(" |            ")
+
+    if(tentativa == 2):
+        print(" |      (o)   ")
+        print(" |      \|/   ")
+        print(" |       |    ")
+        print(" |            ")
+
+    if(tentativa == 1):
+        print(" |      (o)   ")
+        print(" |      \|/   ")
+        print(" |       |    ")
+        print(" |      /     ")
+
+    if (tentativa == 0):
+        print(" |      (o)   ")
+        print(" |      \|/   ")
+        print(" |       |    ")
+        print(" |      / \   ")
+
+    print(" |            ")
+    print(" |__         ")
+    print()
+
+def imprime_mensagem_vencedor():
+    print("Parabéns, você ganhou!")
+    print("       ___________      ")
+    print("      '.=========.'     ")
+    print("      .-\\:      /-.    ")
+    print("     | (|:.     |) |    ")
+    print("      '-|:.     |-'     ")
+    print("        \\::.    /      ")
+    print("         '::. .'        ")
+    print("           ) (          ")
+    print("         .'   '.        ")
+    print("        '-------'       ")
+    
+    
 """
 Definição caracteristicas do jogo
 N erros
 N Jogadores
 etc
 """
-Numero_tentativas=5
+Numero_tentativas=7
 
 """
 #Elemento 1 Leitura ou sorteio da palavra a ser descoberta:
@@ -68,9 +150,9 @@ arquivo.close()
 conteudo_lista=conteudo.split('\n')
 
 
-# palavra_secreta=sorteio_palavra(conteudo_lista)
+palavra_secreta=sorteio_palavra(conteudo_lista)
 # palavra_secreta='abc'
-palavra_secreta='onçapintada'
+# palavra_secreta='agua-viva'
 
 
 """
@@ -91,14 +173,14 @@ Palavra_formatada=tratamento(palavra_secreta)
 
 """
 
-Palavra_Display=len(Palavra_formatada)*'*'
-
+# Palavra_Display=len(Palavra_formatada)*'*'
+Palavra_Display,numero_letras=esconde_palavra(Palavra_formatada)
 
 """
 #Elemento 4 print da palavra escondida para o jogador:
 
 """
-numero_letras=len(Palavra_formatada)
+
 print(f'Atenção! A palavra secreta tem {numero_letras} letras')
 
 
@@ -126,15 +208,18 @@ while Numero_tentativas>0:
 
     """
 
+        
     Novaletra=input('Digite o teu palpite, uma letra da palavra secreta: ')
     if not validade_letra_jogador(Novaletra):
         continue
         
-    Novaletra=tratamento(Novaletra)
+    Novaletra=tratamento_letra(Novaletra,palavra_secreta)
     
 
     if Novaletra in Letras_digitadas:
         print(f'A letra {Novaletra} já foi digitada!')
+        if len(Letras_digitadas)>0:
+            print(f'Você já digitou este conjunto de letras: {Letras_digitadas}')
         continue
     else:
         Letras_digitadas.append(Novaletra)
@@ -168,6 +253,8 @@ while Numero_tentativas>0:
     if not True in Vetor:
         Numero_tentativas-=1
         print(f'A palavra secreta não contem a letra {Novaletra}!')
+        desenho_erros(Numero_tentativas)
+        print(f'Você tem {Numero_tentativas}')
         if Numero_tentativas<1:
             print(f'Perdeu a palavra era {Palavra_formatada}!')
     else:        
@@ -180,6 +267,7 @@ while Numero_tentativas>0:
     
     if Palavra_Display==Palavra_formatada:
      print(f'Ganhou! A palavra secreta é {Palavra_Display}!')
+     imprime_mensagem_vencedor()
      break
             
 
