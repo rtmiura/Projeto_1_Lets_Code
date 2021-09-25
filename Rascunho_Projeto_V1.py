@@ -9,9 +9,7 @@ Created on Tue Sep 21 18:26:47 2021
 import random
 from unicodedata import normalize
 
-# Teste para github
-
-
+random.seed(0)
 
 def sorteio_palavra(lista_palavras):    
     # print(conteudo_lista)
@@ -35,6 +33,17 @@ def tratamento(palavra):
     palavra=palavra.replace(' ','-')
     return palavra
 
+def validade_letra_jogador(letra):
+    if len(letra)>1:
+        print(f'Você cometeu um erro. {letra} tem de um caracter digitado--> ')
+        return False
+    if not letra.isalpha():
+        print(f'Você cometeu um erro. {letra} não é uma letra-> ')
+        return False
+    
+    return True
+
+
 """
 Definição caracteristicas do jogo
 N erros
@@ -46,35 +55,36 @@ Numero_tentativas=5
 """
 #Elemento 1 Leitura ou sorteio da palavra a ser descoberta:
 
--Definição da palavra secreta
+-Definição da palavra secreta ---> Feito
 -Escolha por critério de dificuldade
--Verificar possiveis palavras sem sentido para jogo da forca
+-Verificar possiveis palavras sem sentido para jogo da forca --> Parcialmente feito
 
 """
 
-arquivo = open('Palavras_red.txt', 'r', encoding="utf-8")
+arquivo = open('Lista_Teste.txt', 'r', encoding="utf-8")
 conteudo = arquivo.read()
     
 arquivo.close()
 conteudo_lista=conteudo.split('\n')
 
 
-palavra_secreta=sorteio_palavra(conteudo_lista)
-Palavra=tratamento(palavra_secreta)
+# palavra_secreta=sorteio_palavra(conteudo_lista)
+# palavra_secreta='abc'
+palavra_secreta='onçapintada'
 
-#Palavra='Água'
 
 """
 #Elemento 2 Tratamento da palavra secreta:
 
--Remover espaços antes e depois
--Colocar tudo num padrão, exemplo tudo maiusculo
+-Remover espaços antes e depois --> Feito
+-Colocar tudo num padrão, exemplo tudo maiusculo --> Feito
 - Definir como serão tratados acentos, traços no meio de palavras, 
-letras diferentes como ç, etc
+letras diferentes como ç, etc --> Feito
 
 """
 
-Palavra_formatada=Palavra.strip().upper()
+Palavra_formatada=tratamento(palavra_secreta)
+#Palavra='Água'
 
 """
 #Elemento 3 esconder a palavra tratada para mostrar para o jogador:
@@ -88,7 +98,9 @@ Palavra_Display=len(Palavra_formatada)*'*'
 #Elemento 4 print da palavra escondida para o jogador:
 
 """
-print(Palavra_Display)
+numero_letras=len(Palavra_formatada)
+print(f'Atenção! A palavra secreta tem {numero_letras} letras')
+
 
 
 """
@@ -96,29 +108,33 @@ print(Palavra_Display)
 
 """
 Letras_digitadas=[]
+
+
 while Numero_tentativas>0:
+    
+    print(f'Palavra secreta: {Palavra_Display}',end='')
+    
     """
     Elemento 5 leitura da tentativa do jogador:
         Jogador por tentar somente letra? pode tentar chutar a palavra direto?
-        Ler letra
+        
+        Ler letra --> Feito
+        
         Tratar letra, checar erros de digitação, ver se é uma letra de fato
         verificar se letra é repetida
-        Dar feedbacks ao usuario
+        Dar feedbacks ao usuario  --> Feito
 
     """
-    
-    Novaletra=input('Digite Letra\n')
-    
-    if len(Novaletra)>1:
-        print(f'Você provavelmente cometeu um erro. Foi digitado mais de um caracter --> {Novaletra}')
+
+    Novaletra=input('Digite o teu palpite, uma letra da palavra secreta: ')
+    if not validade_letra_jogador(Novaletra):
         continue
         
-    Novaletra=Novaletra.strip().upper()
+    Novaletra=tratamento(Novaletra)
     
 
     if Novaletra in Letras_digitadas:
         print(f'A letra {Novaletra} já foi digitada!')
-        print(Palavra_Display)
         continue
     else:
         Letras_digitadas.append(Novaletra)
@@ -159,7 +175,7 @@ while Numero_tentativas>0:
             if Vetor[i]:
                 Palavra_Display_list[i]=Novaletra
         Palavra_Display=''.join(Palavra_Display_list)
-    print(Palavra_Display)
+        
     
     
     if Palavra_Display==Palavra_formatada:
