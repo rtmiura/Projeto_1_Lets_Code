@@ -5,7 +5,7 @@ Created on Tue Sep 21 18:26:47 2021
 @author: rodrigo
 """
 
-
+#
 import random
 from unicodedata import normalize
 
