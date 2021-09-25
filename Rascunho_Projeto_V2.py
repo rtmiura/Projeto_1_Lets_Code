@@ -5,7 +5,7 @@ Created on Tue Sep 21 18:26:47 2021
 @author: rodrigo
 """
 
-#
+# testes no git
 import random
 from unicodedata import normalize
 
@@ -25,7 +25,7 @@ def remover_acentos(txt):
     return normalize('NFKD', txt).encode('ASCII', 'ignore').decode('ASCII')
 
 
-    
+    ]
 def tratamento(palavra):    
     # print(conteudo_lista)
     palavra=palavra.upper().strip()
