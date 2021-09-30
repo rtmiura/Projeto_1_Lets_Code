@@ -86,8 +86,8 @@ def esconde_palavra(palavra):
 
 def desenho_erros(tentativa,nome):
     print()
-    time.sleep(0.5)
-    print(f'Forca do {nome}')
+    time.sleep(1.5)
+    print(f'Forca de {nome}')
     print("  ________    ")
     print(" |/      |    ")
 
@@ -139,7 +139,7 @@ def desenho_erros(tentativa,nome):
 
 
 def imprime_mensagem_vencedor(nome):
-    time.sleep(0.5)
+    time.sleep(1.5)
     print(f"\nParabéns {nome}, você ganhou!")
     print("       ___________      ")
     print("      '.=========.'     ")
@@ -191,7 +191,62 @@ class Jogador(object):
         else:
             return (f'Nome: {self.name} - Vitórias: {self.vitorias} - Derrotas: {self.derrotas}')
     
-
+class Jogador_Burro(Jogador):
+    def __init__(self,nome):
+        
+        self.name=nome
+        self.vitorias=0
+        self.derrotas=0
+        self.n_tentativas_para_vencer=0
+        self.lista_Vogais=['A', 'I', 'O', 'E', 'U']
+        self.lista_Consoantes=['R', 'N', 'C', 'L', 'T', 'M', 'S', 'B', 'G', 'D', 'P', 'H', 'V', 'J', 'F', 'K', 'Q', 'X', 'Z', 'W', 'Y']
+        self.lista_letras_jogadas=[]
+        
+    def tenta_nova_letra(self,lista_letras_jogadas=[]):
+        novas_letrar_para_tirar=[]
+        
+        for letra in lista_letras_jogadas:
+            if letra not in self.lista_letras_jogadas:
+                self.lista_letras_jogadas.append(letra)
+                novas_letrar_para_tirar.append(letra)
+            
+        for letra in novas_letrar_para_tirar:
+            if letra in self.lista_Vogais:
+                self.lista_Vogais.remove(letra)
+            if letra in self.lista_Consoantes:
+                self.lista_Consoantes.remove(letra)
+        
+        if len(self.lista_Vogais)>0:
+            letra_da_vez=self.lista_Vogais[0]
+            self.lista_Vogais.remove(letra_da_vez)
+            self.lista_letras_jogadas.append(letra_da_vez)            
+            print(f'\nSou o robô {self.name}. Após cálculos avançados a letra certa é a vogal {letra_da_vez}')
+            time.sleep(3)
+            return letra_da_vez
+        else:
+            if len(self.lista_Consoantes)>0:
+                letra_da_vez=self.lista_Consoantes[0]
+                self.lista_Consoantes.remove(letra_da_vez)
+                self.lista_letras_jogadas.append(letra_da_vez)
+                print(f'\nSou o robô {self.name}. Após cálculos avançados a letra certa é a consoante {letra_da_vez}')
+                time.sleep(3)
+                return letra_da_vez
+            else:
+                print(f'\nSou o robô {self.name}. Acabaram minhas letras')
+                time.sleep(3)
+    
+    def reinicia_Robo(self):
+         self.lista_Vogais=['A', 'I', 'O', 'E', 'U']
+         self.lista_Consoantes=['R', 'N', 'C', 'L', 'T', 'M', 'S', 'B', 'G', 'D', 'P', 'H', 'V', 'J', 'F', 'K', 'Q', 'X', 'Z', 'W', 'Y']
+         
+        
+    def atualiza_vitoria(self):
+         self.vitorias+=1
+         self.reinicia_Robo()
+         
+    def atualiza_derrota(self):
+         self.derrotas+=1
+         self.reinicia_Robo()
 
 class Forca(object):
     
@@ -246,12 +301,17 @@ class Forca(object):
         Jogador_da_rodada=self.Lista_Jogadores[0]
         
         if self.numero_tentativas(Jogador_da_rodada.retorna_nome_jogador())>0:
-            time.sleep(0.5)
+            time.sleep(1.5)
             print(f'\nÉ a vez de {Jogador_da_rodada.retorna_nome_jogador()} jogar:')
-            time.sleep(0.5)
-            print(f'Palavra secreta: {self.Palavra_Display}',end='')
-            time.sleep(0.5)
-            self.Novaletra=Jogador_da_rodada.tenta_nova_letra()
+            time.sleep(1.5)
+            print(f'Palavra secreta: {self.Palavra_Display}')
+            time.sleep(1.5)
+            
+            if type(Jogador_da_rodada).__name__=='Jogador':
+                self.Novaletra=Jogador_da_rodada.tenta_nova_letra()
+                
+            elif type(Jogador_da_rodada).__name__=='Jogador_Burro':
+                self.Novaletra=Jogador_da_rodada.tenta_nova_letra(self.Letras_digitadas)
             
             if not validade_letra_jogador(self.Novaletra):
                 return None
@@ -261,10 +321,10 @@ class Forca(object):
             
             if self.Novaletra in self.Letras_digitadas:
                 print(f'A letra {self.Novaletra} já foi digitada!')
-                time.sleep(0.5)
+                time.sleep(1.5)
                 if len(self.Letras_digitadas)>0:
                     print(f'Já foi digitado este conjunto de letras: {self.Letras_digitadas}')
-                    time.sleep(0.5)
+                    time.sleep(1.5)
                 return None
             else:
                 self.Letras_digitadas.append(self.Novaletra)
@@ -278,12 +338,13 @@ class Forca(object):
             if not True in Vetor: #jogador Errou
                 self.Tentativas_Jogador[Jogador_da_rodada.retorna_nome_jogador()]-=1 #remove tentativa
                 print(f'A palavra secreta não contém a letra {self.Novaletra}!')
-                time.sleep(0.5)
+                time.sleep(1.5)
                 desenho_erros(self.Tentativas_Jogador[Jogador_da_rodada.retorna_nome_jogador()],Jogador_da_rodada.retorna_nome_jogador()) #desenha forca
                 self.atualiza_fila()
                 
                 if self.Tentativas_Jogador[Jogador_da_rodada.retorna_nome_jogador()]<1: #checa se perdeu
                     print(f'{Jogador_da_rodada.retorna_nome_jogador()} perdeu !')
+                    Jogador_da_rodada.atualiza_derrota()
                     self.Perdedores.append(self.Lista_Jogadores.pop())
                     
                     if len(self.Lista_Jogadores)<1:
@@ -293,12 +354,12 @@ class Forca(object):
                         return None
                   
                 else: #mostra o numero de tentaticas restantes
-                    time.sleep(0.5)
+                    time.sleep(1.5)
                     print(f'{Jogador_da_rodada.retorna_nome_jogador()}, você pode cometer mais {self.Tentativas_Jogador[Jogador_da_rodada.retorna_nome_jogador()]} erros')
                 
         
             else: #jogador Acertou
-                time.sleep(0.5)
+                time.sleep(1.5)
                 print(f'A palavra secreta contém a letra {self.Novaletra}!')
                 for i in range(len(self.Palavra_Comparar)): #Atualiza a letra na palavra escondida
                     if Vetor[i]:
@@ -309,50 +370,48 @@ class Forca(object):
                 
                 
             if self.Palavra_Comparar==self.Palavra_formatada: #checa se ganhou
-                 time.sleep(0.5)
+                 time.sleep(1.5)
                  print(f'{Jogador_da_rodada.retorna_nome_jogador()} ganhou! A palavra secreta é {self.palavra_secreta.upper()}!')
                  imprime_mensagem_vencedor(Jogador_da_rodada.retorna_nome_jogador())
+                 Jogador_da_rodada.atualiza_vitoria()
                  self.Vencedor.append(self.Lista_Jogadores.pop(0))
                  self.Jogo_Valido=False
                  if len(self.Lista_Jogadores)>0:
-                     for i in range(len(self.Lista_Jogadores)):                        
+                     for i in range(len(self.Lista_Jogadores)):
+                         self.Lista_Jogadores[i].atualiza_derrota()
                          self.Perdedores.append(self.Lista_Jogadores[i])
                      
                      
                 
                     
         else:
-            time.sleep(0.5)
+            time.sleep(1.5)
             print(f'{Jogador_da_rodada.retorna_nome_jogador()} não tem mais tentativas')
             return None
             
 
-# arquivo = open('lista_palavras_frutas.txt', 'r', encoding="utf-8")
-# # arquivo = open('Lista_Teste.txt', 'r', encoding="utf-8")
-# conteudo = arquivo.read()    
-# arquivo.close()
-# conteudo_lista=conteudo.split('\n')
+###################################################################################
 
 dicionario_categorias={"A":"Animais","F":"Frutas", "P":"Países"}
 
-print(f'O jogo tem 3 níveis de dificildade:\n *No nível fácil você escolhe a categoria da palavra \n *No nível médio o jogo escolhe a categoria para você e te avisa sobre a categoria escolhida \n *No nível difícil o jogo sorteia a palavra mas não te avisa sobre a categoria escolhida \n')
+print(f'O jogo tem 3 níveis de dificildade:\n *No nível fácil você escolhe a categoria da palavra \n\n *No nível médio o jogo escolhe a categoria para você e\n te avisa sobre a categoria escolhida \n\n *No nível difícil o jogo sorteia a palavra mas\n não te avisa sobre a categoria escolhida \n')
 time.sleep(0.5)
-dificuldade=input('Em qual dificuldade você quer jogar? Fácil(F), Médio(M) ou Díficil(D)')
+dificuldade=input('Em qual dificuldade você quer jogar? Fácil(F), Médio(M) ou Díficil(D) ')
 dificuldade=dificuldade.upper()
 
 while dificuldade not in ("F","M","D"):
-    time.sleep(0.5)
-    categoria_palavra=input('Em qual dificuldade você quer jogar? Fácil(F), Médio(M) ou Díficil(D)')  
+    time.sleep(1.5)
+    categoria_palavra=input('Em qual dificuldade você quer jogar? Fácil(F), Médio(M) ou Díficil(D) ')  
 
 if  dificuldade=="F":
-    time.sleep(0.5)
-    categoria_palavra=input('Qual categoria de palavras você quer? Países(P), Animais(A) ou Frutas(F)')
+    time.sleep(1.5)
+    categoria_palavra=input('Qual categoria de palavras você quer? Países(P), Animais(A) ou Frutas(F) ')
     categoria_palavra=categoria_palavra.upper()
     
     
     while categoria_palavra not in ("A","F","P"):
-        time.sleep(0.5)
-        categoria_palavra=input('Qual categoria de palavras você quer? Países(P), Animais(A) ou Frutas(F)')    
+        time.sleep(1.5)
+        categoria_palavra=input('Qual categoria de palavras você quer? Países(P), Animais(A) ou Frutas(F) ')    
 
     print_categoria(dicionario_categorias[categoria_palavra])
     
@@ -367,18 +426,27 @@ elif dificuldade=="D":
 
 conteudo_lista=ler_lista_de_palavras(categoria_palavra)
 
+################################################################################
 
 Jogador1=Jogador('Ana Beatriz')
 
 Jogador2=Jogador('Julia') 
 
-# Jogador3=Jogador('Julia')
+Jogador3=Jogador('Julia')
 
-# Jogador4=Jogador('Rodrigo') 
+Jogador4=Jogador('Rodrigo') 
 
-lista_jogadores=[Jogador1,Jogador2]
+# lista_jogadores=[Jogador1,Jogador2]
+
+Robo_burro=Jogador_Burro('Robo Lerdinho')
+Robo_burro2=Jogador_Burro('Robo Mais Lerdinho')      
+
+
+lista=[Jogador4,Robo_burro]
+
  
-Forca1=Forca(conteudo_lista,lista_jogadores)
+Forca1=Forca(conteudo_lista,lista)
+
 
 Jogo_valido=True
 
