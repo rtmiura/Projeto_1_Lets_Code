@@ -570,13 +570,13 @@ while not Restart_jogo:
                 if Nome_jogador not in nome_jogadores_rodada:
                      jogador_valid=True
             
-        else:
-            if Nome_jogador not in dic_jogadores:
-                Tipo_jogador=input('Tipo de Jogador: Humano = 1 / Robô !=1 -')
-                if Tipo_jogador=='1':
-                    dic_jogadores[Nome_jogador]=Jogador(Nome_jogador)
-                else:
-                     dic_jogadores[Nome_jogador]=Jogador_Burro(Nome_jogador)
+        
+        if Nome_jogador not in dic_jogadores:
+            Tipo_jogador=input('Tipo de Jogador: Humano = 1 / Robô !=1 -')
+            if Tipo_jogador=='1':
+                dic_jogadores[Nome_jogador]=Jogador(Nome_jogador)
+            else:
+                 dic_jogadores[Nome_jogador]=Jogador_Burro(Nome_jogador)
         
         nome_jogadores_rodada.append(Nome_jogador)
         lista_jogadores_rodada.append(dic_jogadores[Nome_jogador])       
