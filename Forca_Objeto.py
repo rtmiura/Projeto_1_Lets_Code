@@ -87,14 +87,17 @@ def esconde_palavra(palavra):
 
 def Numero_Jogadores():
 
-    N=input('Quantos jogadores irão jogar nesta rodada? ')
+    N=input(f'{Colors.BOLD}Quantos jogadores irão jogar nesta rodada?  ')
     
     try:
         Numero=int(N)
         if Numero<1:
             raise Exception('Numero de Jogadores Menor que 1')
+        elif Numero>5:
+            raise Exception('Numero de Jogadores Maior que 5')
         return Numero        
-    except:
+    except Exception as error:
+        print(error)
         return Numero_Jogadores()
 
 
@@ -514,6 +517,17 @@ class Forca(object):
             return None
             
 
+class Colors(object):
+    GREEN = '\033[92m'
+    YELLOW = '\033[93m'
+    RED = '\033[91m'
+    RESET = '\033[0m' 
+    BLUE  = "\033[1;34m"
+    CYAN  = "\033[1;36m"
+    RESET = "\033[0;0m"
+    BOLD    = "\033[;1m"
+    REVERSE = "\033[;7m"           
+
 ###################################################################################
 
 
@@ -539,12 +553,14 @@ while not Restart_jogo:
     
 
     lista_jogadores_rodada=[]
+    print(f'\n {Colors.RED} ****SEJA BEM VINDO AO JOGO DE FORCA DA LETS CODE**** {Colors.RESET} \n')
+
     nome_jogadores_rodada=[]
     
     N_jogadores=Numero_Jogadores()
     
     for n_player in range(N_jogadores):
-        Nome_jogador=input('Escreva o nome de um jogador que irá jogar rodada: ') 
+        Nome_jogador=input(f'\nEscreva o nome de um jogador que irá jogar rodada:{Colors.RESET} ')        
         
         if Nome_jogador in nome_jogadores_rodada:
             jogador_valid=False
@@ -571,7 +587,6 @@ while not Restart_jogo:
     
     Jogo_valido=True
     
-
    
     Forca1=Forca(lista_jogadores_rodada)
     
@@ -579,7 +594,7 @@ while not Restart_jogo:
         Forca1.jogar()
         Jogo_valido=Forca1.jogo_Valido()
     
-    Restart_jogo = int(input('Quer continuar a jogar? Sim = 1, Não = 0 '))!=1
+    Restart_jogo = input(f'{Colors.BOLD}Quer continuar a jogar? Sim = 1, Não = 0 ') != '1'
 
 
 
