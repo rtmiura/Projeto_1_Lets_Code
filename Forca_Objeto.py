@@ -8,7 +8,7 @@ Created on Tue Sep 28 11:39:29 2021
 import random
 from unicodedata import normalize
 import time
-
+import csv
 # random.seed(0)
 
 def ler_lista_de_palavras(categoria_palavra):
@@ -158,6 +158,7 @@ class Jogador(object):
         self.name=nome
         self.vitorias=0
         self.derrotas=0
+        self.pontos=0
         self.n_tentativas_para_vencer=0
         
     def tenta_nova_letra(self):
@@ -172,11 +173,13 @@ class Jogador(object):
     def retorna_n_derrotas(self):
         return self.derrotas
     
+    
     def retorna_media_tentativas_para_ganhar(self):
         return self.n_tentativas_para_vencer/self.vitorias
     
-    def atualiza_vitoria(self):
+    def atualiza_vitoria(self,pontuacao):
          self.vitorias+=1
+         self.pontos+=pontuacao
          
     def atualiza_derrota(self):
          self.derrotas+=1
@@ -197,19 +200,20 @@ class Jogador_Burro(Jogador):
         self.name=nome
         self.vitorias=0
         self.derrotas=0
+        self.pontos=0
         self.lista_Vogais=['A', 'I', 'O', 'E', 'U']
         self.lista_Consoantes=['R', 'N', 'C', 'L', 'T', 'M', 'S', 'B', 'G', 'D', 'P', 'H', 'V', 'J', 'F', 'K', 'Q', 'X', 'Z', 'W', 'Y']
         self.lista_letras_jogadas=[]
         
     def tenta_nova_letra(self,lista_letras_jogadas=[]):
-        novas_letrar_para_tirar=[]
+
         
         for letra in lista_letras_jogadas:
             if letra not in self.lista_letras_jogadas:
                 self.lista_letras_jogadas.append(letra)
-                novas_letrar_para_tirar.append(letra)
+
             
-        for letra in novas_letrar_para_tirar:
+        for letra in lista_letras_jogadas:
             if letra in self.lista_Vogais:
                 self.lista_Vogais.remove(letra)
             if letra in self.lista_Consoantes:
@@ -239,8 +243,9 @@ class Jogador_Burro(Jogador):
          self.lista_Consoantes=['R', 'N', 'C', 'L', 'T', 'M', 'S', 'B', 'G', 'D', 'P', 'H', 'V', 'J', 'F', 'K', 'Q', 'X', 'Z', 'W', 'Y']
          
         
-    def atualiza_vitoria(self):
+    def atualiza_vitoria(self,pontuacao):
          self.vitorias+=1
+         self.pontos+=pontuacao
          self.reinicia_Robo()
          
     def atualiza_derrota(self):
@@ -253,8 +258,8 @@ class Forca(object):
         
         self.Numero_tentativas=7
         
-        self.palavra_secreta=sorteio_palavra(conteudo_lista)
-        # self.palavra_secreta='abc'
+        # self.palavra_secreta=sorteio_palavra(conteudo_lista)
+        self.palavra_secreta='aizv'
         
         self.palavra_secreta_list=list(self.palavra_secreta)        
         self.Palavra_formatada=tratamento(self.palavra_secreta)
@@ -288,7 +293,9 @@ class Forca(object):
     def jogo_Valido(self):
         return self.Jogo_Valido
         
-        
+    def calcula_pontuacao(self, Jogador):
+        pontuacao = len(self.palavra_secreta) * self.Tentativas_Jogador[Jogador.retorna_nome_jogador()]
+        return pontuacao 
 
     def jogar(self):
         
@@ -372,7 +379,9 @@ class Forca(object):
                  time.sleep(1.0)
                  print(f'{Jogador_da_rodada.retorna_nome_jogador()} ganhou! A palavra secreta é {self.palavra_secreta.upper()}!')
                  imprime_mensagem_vencedor(Jogador_da_rodada.retorna_nome_jogador())
-                 Jogador_da_rodada.atualiza_vitoria()
+                 Pontuacao=self.calcula_pontuacao(Jogador_da_rodada)
+                 
+                 Jogador_da_rodada.atualiza_vitoria(Pontuacao)
                  self.Vencedor.append(self.Lista_Jogadores.pop(0))
                  self.Jogo_Valido=False
                  if len(self.Lista_Jogadores)>0:
@@ -391,6 +400,8 @@ class Forca(object):
 
 ###################################################################################
 
+
+
 dicionario_categorias={"A":"Animais","F":"Frutas", "P":"Países"}
 
 
@@ -408,27 +419,36 @@ Restart_jogo=False
 
 
 
-while not Restart_jogo:
-    
+while not Restart_jogo:  
 
     
-    # lista_jogadores=[Jogador1,Jogador2]
     
 
     lista_jogadores_rodada=[]
+    nome_jogadores_rodada=[]
     
     N_jogadores=int(input('Quantos jogadores irão jogar nesta rodada? '))
     
     for n_player in range(N_jogadores):
-        Nome_jogador=input('Escreva o nome de um jogador que irá jogar rodada: ')        
+        Nome_jogador=input('Escreva o nome de um jogador que irá jogar rodada: ') 
         
-        if Nome_jogador not in dic_jogadores:
-            Tipo_jogador=input('Tipo de Jogador: Humano = 1 / Robô !=1 -')
-            if Tipo_jogador=='1':
-                dic_jogadores[Nome_jogador]=Jogador(Nome_jogador)
-            else:
-                 dic_jogadores[Nome_jogador]=Jogador_Burro(Nome_jogador)
+        if Nome_jogador in nome_jogadores_rodada:
+            jogador_valid=False
+            while not jogador_valid:
+                print('Este Jogador já foi cadastrado')
+                Nome_jogador=input('Escreva o nome de um jogador diferente: ')
+                if Nome_jogador not in nome_jogadores_rodada:
+                     jogador_valid=True
+            
+        else:
+            if Nome_jogador not in dic_jogadores:
+                Tipo_jogador=input('Tipo de Jogador: Humano = 1 / Robô !=1 -')
+                if Tipo_jogador=='1':
+                    dic_jogadores[Nome_jogador]=Jogador(Nome_jogador)
+                else:
+                     dic_jogadores[Nome_jogador]=Jogador_Burro(Nome_jogador)
         
+        nome_jogadores_rodada.append(Nome_jogador)
         lista_jogadores_rodada.append(dic_jogadores[Nome_jogador])       
     
 
@@ -512,3 +532,4 @@ print()
 print('Ranking percentual de vitórias:')
 for i in range(len(Ranking_Jogadores_Aproveitamento)):
     print(f'N° {i+1:2.0f} - Jogador: {Ranking_Jogadores_Vitorias[i]:12s} - Aproveitamento {100*percentual_vitorias_jogador(dic_jogadores,Ranking_Jogadores_Vitorias[i]):4.1f} %')
+    
