@@ -348,7 +348,7 @@ class Forca(object):
 
         
         print(f'Atenção! A palavra secreta tem {self.numero_letras} letras')
-        time.sleep(0.5)
+        time.sleep(1.0)
         
         for Jogador in Lista_Jogadores:
             self.Tentativas_Jogador[Jogador.retorna_nome_jogador()]=self.Numero_tentativas
@@ -452,7 +452,7 @@ class Forca(object):
                 self.Tentativas_Jogador[Jogador_da_rodada.retorna_nome_jogador()]-=1 #remove tentativa
                 
                 print(f'A palavra não contém {self.Novaletra}!')
-                time.sleep(0.5)
+                time.sleep(1.0)
                 print(f'\n{Jogador_da_rodada.retorna_nome_jogador()} '+random.choice(errou_letra)+'\n')
                 
                 time.sleep(1.0)
@@ -481,7 +481,7 @@ class Forca(object):
             else: #jogador Acertou
                 time.sleep(1.0)
                 print(f'A palavra secreta contém a letra {self.Novaletra}!')
-                print(f'\n{Jogador_da_rodada.retorna_nome_jogador()} é simplesmente '+random.choice(msg_acertou_letra)+' do jogo de forca')
+                print(f'\n{Jogador_da_rodada.retorna_nome_jogador()} é simplesmente '+random.choice(msg_acertou_letra)+' do jogo da forca')
                 for i in range(len(self.Palavra_Comparar)): #Atualiza a letra na palavra escondida
                     if Vetor[i]:
                         Palavra_Comparar_list[i]=self.Novaletra
@@ -572,7 +572,7 @@ while not Restart_jogo:
             
         
         if Nome_jogador not in dic_jogadores:
-            Tipo_jogador=input('Tipo de Jogador: Humano = 1 / Robô !=1 -')
+            Tipo_jogador=input('Tipo de Jogador: Humano = 1 / Robô !=1 ')
             if Tipo_jogador=='1':
                 dic_jogadores[Nome_jogador]=Jogador(Nome_jogador)
             else:
@@ -603,7 +603,7 @@ while not Restart_jogo:
 
 
 #############################################################################
-print()
+print('')
 
 for jogador in dic_jogadores.values():
     print(jogador)
@@ -624,44 +624,80 @@ Ranking_Jogadores_Vitorias.sort(key=lambda x:vitorias_jogador(dic_jogadores,x),r
 Ranking_Jogadores_Aproveitamento.sort(key=lambda x:percentual_vitorias_jogador(dic_jogadores,x),reverse=True)
 
 
-print()
-print('Ranking Por Número de Vitórias:')
+print(f'{Colors.CYAN} \n**** RESULTADOS DO DIA ****\n{Colors.RESET}')
+print(f'{Colors.CYAN}Ranking Por Número de Vitórias:{Colors.RESET}')
 for i in range(len(Ranking_Jogadores_Vitorias)):
-    print(f'N° {i+1:2.0f} - Jogador: {Ranking_Jogadores_Vitorias[i]:12s} - Vitórias {vitorias_jogador(dic_jogadores,Ranking_Jogadores_Vitorias[i]):4.1f}')
+    print(f'{Colors.CYAN}N° {i+1:2.0f} - Jogador: {Ranking_Jogadores_Vitorias[i]:12s} - Vitórias {vitorias_jogador(dic_jogadores,Ranking_Jogadores_Vitorias[i]):4.0f}{Colors.RESET}')
 
 print()
-print('Ranking percentual de vitórias:')
+print(f'{Colors.CYAN}Ranking percentual de vitórias:{Colors.RESET}')
 for i in range(len(Ranking_Jogadores_Aproveitamento)):
-    print(f'N° {i+1:2.0f} - Jogador: {Ranking_Jogadores_Vitorias[i]:12s} - Aproveitamento {100*percentual_vitorias_jogador(dic_jogadores,Ranking_Jogadores_Vitorias[i]):4.1f} %')
+    print(f'{Colors.CYAN}N° {i+1:2.0f} - Jogador: {Ranking_Jogadores_Vitorias[i]:12s} - Aproveitamento {100*percentual_vitorias_jogador(dic_jogadores,Ranking_Jogadores_Vitorias[i]):4.0f} %{Colors.RESET}')
+time.sleep(5)
 
 
-# def abrir_rank():   
-#     arquivo = open('ranking.csv', 'r', encoding = "utf-8")
-#     read_csv = csv.reader(arquivo, delimiter=',', lineterminator='\n')
 
-#     ranking = {}
-#     for line in read_csv:
-#         nome_jogador_rank = line[0]
-#         vitorias_jogador_rank = int(line[1])
-#         pontuacao_jogador_rank = int(line[2])
-#         ranking[nome_jogador_rank] = [vitorias_jogador_rank, pontuacao_jogador_rank]
-#     arquivo.close()
-#     return ranking   
+def abrir_rank():   
+    arquivo = open('ranking.csv', 'r', encoding = "utf-8")
+    read_csv = csv.reader(arquivo, delimiter=',', lineterminator='\n')
+
+    ranking = {}
+
+    for line in read_csv:
+        if len(line)>1:
+            nome_jogador_rank = line[0]
+            vitorias_jogador_rank = int(line[1])
+            derrotas_jogador_rank = int(line[2])
+            pontuacao_jogador_rank = int(line[3])
+            ranking[nome_jogador_rank] = [vitorias_jogador_rank,derrotas_jogador_rank, pontuacao_jogador_rank]
+    arquivo.close()
+    return ranking   
  
-# def atualiza_rank(ranking,dic_jogadores):
+def atualiza_rank(ranking,dic_jogadores):
 
-#     for jogador in dic_jogadores:
-#         if jogador in ranking:
-#             ranking[jogador][0] += dic_jogadores[jogador].retorna_n_vitorias()
-#             ranking[jogador][1] += dic_jogadores[jogador].retorna_pontos()
-#         else:
-#             ranking[jogador][0] = dic_jogadores[jogador].retorna_n_vitorias()
-#             ranking[jogador][1] = dic_jogadores[jogador].retorna_pontos()
-            
-
+    for jogador in dic_jogadores:
+        if jogador in ranking:
+            ranking[jogador][0] += dic_jogadores[jogador].retorna_n_vitorias()
+            ranking[jogador][1] += dic_jogadores[jogador].retorna_n_derrotas()
+            ranking[jogador][2] += dic_jogadores[jogador].retorna_pontos()
+        else:
+            lista_prov=[]
+            lista_prov.append(dic_jogadores[jogador].retorna_n_vitorias())             
     
-#     arquivo = open('ranking.csv', 'w', encoding = "utf-8")
-#     write_csv = csv.reader(arquivo, delimiter =',', lineterminator = '\n').writerows(ranking_atualizado)
-#     write_csv.close()
+            lista_prov.append(dic_jogadores[jogador].retorna_n_derrotas())
+            lista_prov.append(dic_jogadores[jogador].retorna_pontos())
+            ranking[jogador] = lista_prov   
+            
+def reescreve_csv(ranking):
+    ranking_lista=[]
+    for key,lista in ranking.items():
+        ranking_lista.append([key]+lista)
+        
+    arquivo = open('ranking.csv', 'w', encoding = "utf-8")
+    csv.writer(arquivo, delimiter =',', lineterminator = '\n').writerows(ranking_lista)
+    arquivo.close()   
 
-#     return ranking_atualizado
+
+
+rank_historico=abrir_rank()
+atualiza_rank(rank_historico,dic_jogadores)
+reescreve_csv(rank_historico)
+
+Ranking_Vitorias_historico=[jogador for jogador in rank_historico.keys()]
+Ranking_Pontos_historico=Ranking_Vitorias_historico.copy()
+
+Ranking_Vitorias_historico.sort(key=lambda x:[rank_historico[x][0],rank_historico[x][2]],reverse=True)
+Ranking_Pontos_historico.sort(key=lambda x:rank_historico[x][2],reverse=True)
+
+
+print(f'{Colors.CYAN} \n**** RESULTADOS DESDE O INICIO DOS TEMPOS****\n{Colors.RESET}')
+print(f'{Colors.CYAN} Ranking Por Número de Vitórias:{Colors.RESET}')
+for i in range(len(Ranking_Vitorias_historico)):
+    print(f'{Colors.CYAN}N° {i+1:2.0f} - Jogador: {Ranking_Vitorias_historico[i]:12s} - Vitórias {rank_historico[Ranking_Vitorias_historico[i]][0]:4.0f}{Colors.RESET}')
+
+print()
+print(f'{Colors.CYAN}Ranking pontos:{Colors.RESET}')
+for i in range(len(Ranking_Pontos_historico)):
+    print(f'{Colors.CYAN}N° {i+1:2.0f} - Jogador: {Ranking_Pontos_historico[i]:12s} - Pontos {rank_historico[Ranking_Pontos_historico[i]][2]:5.0f}{Colors.RESET}')
+
+
