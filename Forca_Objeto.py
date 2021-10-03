@@ -232,8 +232,8 @@ class Jogador_Burro(Jogador):
             letra_da_vez=self.lista_Vogais[0]
             self.lista_Vogais.remove(letra_da_vez)
             self.lista_letras_jogadas.append(letra_da_vez)            
-            print(f'\nSou o robô {self.name}. Após cálculos avançados a letra certa é a vogal {letra_da_vez}')
-            time.sleep(3)
+            print(f'\nSou o robô {self.name}. \"Após cálculos avançados a letra certa é a vogal {letra_da_vez}\"')
+            time.sleep(2)
             return letra_da_vez
         else:
             if len(self.lista_Consoantes)>0:
@@ -241,11 +241,11 @@ class Jogador_Burro(Jogador):
                 self.lista_Consoantes.remove(letra_da_vez)
                 self.lista_letras_jogadas.append(letra_da_vez)
                 print(f'\nRobô {self.name}: \"Após cálculos avançados a letra certa é a consoante {letra_da_vez}\"')
-                time.sleep(3)
+                time.sleep(2)
                 return letra_da_vez
             else:
                 print(f'\nSou o robô {self.name}. Acabaram minhas letras')
-                time.sleep(3)
+                time.sleep(2)
     
     def reinicia_Robo(self):
          self.lista_Vogais=['A', 'I', 'O', 'E', 'U']
@@ -401,14 +401,14 @@ class Jogador_Monstro(Jogador_Burro):
              self.proxima_letra =random.choice(chute_desesperado)  
              
         print(f'\nSou o robô {self.name}. Após cálculos avançados a letra é {self.proxima_letra}')    
-        time.sleep(3)
+        time.sleep(2)
         return self.proxima_letra
     
     def reinicia_Robo(self):
         self.primeiro_filtro=True        
         self.Letras_Descobertas={}
         self.lista_letras_jogadas_Erradas=[]
-        self.lista_Vogais=['A','I','E','O','U']
+        # self.lista_Vogais=['A','I','E','O','U']
         
 
 class Forca(object):
@@ -604,7 +604,7 @@ class Forca(object):
             if not True in Vetor: #jogador Errou
                 self.Tentativas_Jogador[Jogador_da_rodada.retorna_nome_jogador()]-=1 #remove tentativa
                 
-                print(f'A palavra não contém {self.Novaletra}!')
+                print(f'\nA palavra não contém {self.Novaletra}!')
                 time.sleep(1.0)
                 print(f'\n{Jogador_da_rodada.retorna_nome_jogador()} '+random.choice(errou_letra)+'\n')
                 
@@ -633,7 +633,7 @@ class Forca(object):
         
             else: #jogador Acertou
                 time.sleep(1.0)
-                print(f'A palavra secreta contém a letra {self.Novaletra}!')
+                print(f'\nA palavra secreta contém a letra {self.Novaletra}!')
                 print(f'\n{Jogador_da_rodada.retorna_nome_jogador()} é simplesmente '+random.choice(msg_acertou_letra)+' do jogo da forca')
                 for i in range(len(self.Palavra_Comparar)): #Atualiza a letra na palavra escondida
                     if Vetor[i]:
@@ -836,25 +836,25 @@ def reescreve_csv(ranking):
 
 
 
-# rank_historico=abrir_rank()
-# atualiza_rank(rank_historico,dic_jogadores)
-# reescreve_csv(rank_historico)
+rank_historico=abrir_rank()
+atualiza_rank(rank_historico,dic_jogadores)
+reescreve_csv(rank_historico)
 
-# Ranking_Vitorias_historico=[jogador for jogador in rank_historico.keys()]
-# Ranking_Pontos_historico=Ranking_Vitorias_historico.copy()
+Ranking_Vitorias_historico=[jogador for jogador in rank_historico.keys()]
+Ranking_Pontos_historico=Ranking_Vitorias_historico.copy()
 
-# Ranking_Vitorias_historico.sort(key=lambda x:[rank_historico[x][0],rank_historico[x][2]],reverse=True)
-# Ranking_Pontos_historico.sort(key=lambda x:rank_historico[x][2],reverse=True)
+Ranking_Vitorias_historico.sort(key=lambda x:[rank_historico[x][0],rank_historico[x][2]],reverse=True)
+Ranking_Pontos_historico.sort(key=lambda x:rank_historico[x][2],reverse=True)
 
 
-# print(f'{Colors.CYAN} \n**** RESULTADOS DESDE O INICIO DOS TEMPOS****\n{Colors.RESET}')
-# print(f'{Colors.CYAN} Ranking Por Número de Vitórias:{Colors.RESET}')
-# for i in range(len(Ranking_Vitorias_historico)):
-#     print(f'{Colors.CYAN}N° {i+1:2.0f} - Jogador: {Ranking_Vitorias_historico[i]:12s} - Vitórias {rank_historico[Ranking_Vitorias_historico[i]][0]:4.0f}{Colors.RESET}')
+print(f'{Colors.CYAN} \n**** RESULTADOS DESDE O INICIO DOS TEMPOS****\n{Colors.RESET}')
+print(f'{Colors.CYAN} Ranking Por Número de Vitórias:{Colors.RESET}')
+for i in range(len(Ranking_Vitorias_historico)):
+    print(f'{Colors.CYAN}N° {i+1:2.0f} - Jogador: {Ranking_Vitorias_historico[i]:12s} - Vitórias {rank_historico[Ranking_Vitorias_historico[i]][0]:4.0f}{Colors.RESET}')
 
-# print()
-# print(f'{Colors.CYAN}Ranking pontos:{Colors.RESET}')
-# for i in range(len(Ranking_Pontos_historico)):
-#     print(f'{Colors.CYAN}N° {i+1:2.0f} - Jogador: {Ranking_Pontos_historico[i]:12s} - Pontos {rank_historico[Ranking_Pontos_historico[i]][2]:5.0f}{Colors.RESET}')
+print()
+print(f'{Colors.CYAN}Ranking pontos:{Colors.RESET}')
+for i in range(len(Ranking_Pontos_historico)):
+    print(f'{Colors.CYAN}N° {i+1:2.0f} - Jogador: {Ranking_Pontos_historico[i]:12s} - Pontos {rank_historico[Ranking_Pontos_historico[i]][2]:5.0f}{Colors.RESET}')
 
 
