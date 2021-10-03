@@ -260,6 +260,156 @@ class Jogador_Burro(Jogador):
     def atualiza_derrota(self):
          self.derrotas+=1
          self.reinicia_Robo()
+         
+         
+         
+class Jogador_Monstro(Jogador_Burro):
+    
+    def __init__(self,nome):
+        
+        self.name=nome
+        self.vitorias=0
+        self.derrotas=0
+        self.pontos=0
+        self.lista_Tudo=['A','E','I','O','U','R', 'N', 'C', 'L', 'T', 'M', 'S', 'B', 'G', 'D', 'P', 'H', 'V', 'J', 'F', 'K', 'Q', 'X', 'Z', 'W', 'Y']
+        
+        self.primeiro_filtro=True        
+        self.Letras_Descobertas={}
+        self.lista_letras_jogadas_Erradas=[]        
+        self.lista_conhecimento()
+        
+    def lista_conhecimento(self):
+        lista_arquivos=['lista_palavras_paises.txt','lista_palavras_animais.txt','lista_palavras_frutas.txt']
+
+        palavras=[]
+        for arquivo in lista_arquivos:
+            temp = open(arquivo, 'r', encoding="utf-8")
+            conteudo = temp.read()    
+            temp.close()
+            conteudo_lista=conteudo.split('\n')
+            palavras+=conteudo_lista
+            
+        self.palavras_formatadas=[]
+        for palavra in palavras:
+            self.palavras_formatadas.append(tratamento(palavra))    
+    
+    def inicia_remocao_por_tamanho(self,palavra_secreta):
+        self.Numero_letras=len(palavra_secreta)
+        self.Palavras_Possiveis=[palavra for palavra in self.palavras_formatadas if len(palavra)==self.Numero_letras]
+        # print(f'Por tamanho da palavra, reduzi minha busca para {len(self.Palavras_Possiveis)} palavras')
+        # print(self.Palavras_Possiveis)
+        # time.sleep(1)
+    
+    def tenta_nova_letra(self,lista_letras_jogadas,palavra_secreta):
+        
+        if self.primeiro_filtro:
+            self.inicia_remocao_por_tamanho(palavra_secreta)
+            self.primeiro_filtro=False            
+            
+        self.lista_letras_jogadas=lista_letras_jogadas
+        self.palavra_secreta=palavra_secreta        
+        self.Numero_letras_escondidas=self.palavra_secreta.count('*')
+        
+        
+        
+        # ## Arrumando para excluir baseado nas letras abertas
+        # if self.palavra_secreta.count('*')==self.Numero_letras_escondidas and len(lista_letras_jogadas)==0:
+        #     self.lista_Vogais=['A','I','E','O','U']
+        #     chute0=random.choice(self.lista_Vogais)
+        #     self.lista_Vogais.remove(chute0)
+        #     return chute0
+            
+            
+        if len(self.Palavras_Possiveis)>=1:
+            for i in range(len(self.palavra_secreta)):
+                if self.palavra_secreta[i]!='*' and i not in self.Letras_Descobertas:
+                    self.Letras_Descobertas[i]=self.palavra_secreta[i]      
+                    Palavras_Possiveis_Letra_Letra=[]
+                    for palavra in self.Palavras_Possiveis:
+                        if palavra[i]==self.palavra_secreta[i]:
+                            Palavras_Possiveis_Letra_Letra.append(palavra)
+                    try:              
+                        if len(Palavras_Possiveis_Letra_Letra)>0:
+                            self.Palavras_Possiveis=Palavras_Possiveis_Letra_Letra.copy()
+                            # print(f'Por comparaçao letra a letra reduzi minha busca para {len(self.Palavras_Possiveis)} palavras')
+                            # print(self.Palavras_Possiveis)
+                            # time.sleep(1)
+                    except:
+                        pass
+                        # print('Não Reduziu as possibilidades')
+                        
+        para_retirar=[]
+        for Letra_aberta in self.Letras_Descobertas.values():
+            for palavra in self.Palavras_Possiveis:
+                for i in range(len(palavra)):
+                    if palavra[i]==Letra_aberta and self.palavra_secreta[i]=='*':
+                        if palavra not in para_retirar:
+                            para_retirar.append(palavra)
+        
+        for palavra in para_retirar:
+            self.Palavras_Possiveis.remove(palavra)
+        # print(f'Com base nas letras certas nas posições erradas, reduzi minha busca para {len(self.Palavras_Possiveis)} palavras')
+        # print(self.Palavras_Possiveis)          
+        # time.sleep(1)
+            
+        ## Arrumando para excluir baseado nas erradas            
+        for letra in self.lista_letras_jogadas:
+            if letra not in  self.lista_letras_jogadas_Erradas and letra not in self.Letras_Descobertas.values():
+                 self.lista_letras_jogadas_Erradas.append(letra)
+
+        palavras_a_remover=[]
+        for letra in  self.lista_letras_jogadas_Erradas:
+            for palavra in self.Palavras_Possiveis:
+                if letra in palavra:
+                    if palavra not in palavras_a_remover:
+                        palavras_a_remover.append(palavra)
+       
+        for palavra in palavras_a_remover:
+            self.Palavras_Possiveis.remove(palavra)
+        # print(f'Com base nas letras erradas, reduzi minha busca para {len(self.Palavras_Possiveis)} palavras')
+        # print(self.Palavras_Possiveis)
+        # time.sleep(1)
+    
+        ##  Definindo chute se ainda tiver mais de uma possibilidade     
+        if len(self.Palavras_Possiveis)>=1:
+           dicionario_externo={}
+           for i in range(len(self.palavra_secreta)):
+               if self.Palavras_Possiveis[0][i] not in self.Letras_Descobertas.values():
+                   dicionario_letras={}
+                   for palavra in self.Palavras_Possiveis:
+                       if palavra[i] in dicionario_letras:
+                           dicionario_letras[palavra[i]]+=1
+                       elif palavra[i]!='-':
+                           dicionario_letras[palavra[i]]=1
+                           
+                   Letras=[*dicionario_letras.keys()]
+                   Letras.sort(key=lambda x:dicionario_letras[x],reverse=True)
+                   dicionario_externo[i]=[Letras[0],dicionario_letras[Letras[0]]]           
+                        
+                
+           Pos_Externa=[*dicionario_externo.keys()]
+           Pos_Externa.sort(key=lambda x:dicionario_externo[x][1],reverse=True)
+           self.proxima_letra=dicionario_externo[Pos_Externa[0]][0]
+           
+           
+        ##  Se deu ruim e não achou a palavra vamos para o desespero
+        elif len(self.Palavras_Possiveis)<1:
+             chute_desesperado=[]
+             for letra in self.lista_Tudo:
+                 if letra not in self.lista_letras_jogadas:
+                     chute_desesperado.append(letra)
+             self.proxima_letra =random.choice(chute_desesperado)  
+             
+        print(f'\nSou o robô {self.name}. Após cálculos avançados a letra é {self.proxima_letra}')    
+        time.sleep(3)
+        return self.proxima_letra
+    
+    def reinicia_Robo(self):
+        self.primeiro_filtro=True        
+        self.Letras_Descobertas={}
+        self.lista_letras_jogadas_Erradas=[]
+        self.lista_Vogais=['A','I','E','O','U']
+        
 
 class Forca(object):
     
@@ -425,7 +575,10 @@ class Forca(object):
                 
             elif type(Jogador_da_rodada).__name__=='Jogador_Burro':
                 self.Novaletra=Jogador_da_rodada.tenta_nova_letra(self.Letras_digitadas)
-            
+                
+            elif type(Jogador_da_rodada).__name__=='Jogador_Monstro':
+                self.Novaletra=Jogador_da_rodada.tenta_nova_letra(self.Letras_digitadas,self.Palavra_Comparar)
+                        
             if not validade_letra_jogador(self.Novaletra):
                 return None
             
@@ -575,8 +728,12 @@ while not Restart_jogo:
             Tipo_jogador=input('Tipo de Jogador: Humano = 1 / Robô !=1 ')
             if Tipo_jogador=='1':
                 dic_jogadores[Nome_jogador]=Jogador(Nome_jogador)
-            else:
-                 dic_jogadores[Nome_jogador]=Jogador_Burro(Nome_jogador)
+            else:            
+                Tipo_robo=input('Tipo de robo: Básico = 1 / Monstro !=1 ')
+                if Tipo_robo=='1':
+                    dic_jogadores[Nome_jogador]=Jogador_Burro(Nome_jogador)
+                else:
+                    dic_jogadores[Nome_jogador]=Jogador_Monstro(Nome_jogador)
         
         nome_jogadores_rodada.append(Nome_jogador)
         lista_jogadores_rodada.append(dic_jogadores[Nome_jogador])       
@@ -679,25 +836,25 @@ def reescreve_csv(ranking):
 
 
 
-rank_historico=abrir_rank()
-atualiza_rank(rank_historico,dic_jogadores)
-reescreve_csv(rank_historico)
+# rank_historico=abrir_rank()
+# atualiza_rank(rank_historico,dic_jogadores)
+# reescreve_csv(rank_historico)
 
-Ranking_Vitorias_historico=[jogador for jogador in rank_historico.keys()]
-Ranking_Pontos_historico=Ranking_Vitorias_historico.copy()
+# Ranking_Vitorias_historico=[jogador for jogador in rank_historico.keys()]
+# Ranking_Pontos_historico=Ranking_Vitorias_historico.copy()
 
-Ranking_Vitorias_historico.sort(key=lambda x:[rank_historico[x][0],rank_historico[x][2]],reverse=True)
-Ranking_Pontos_historico.sort(key=lambda x:rank_historico[x][2],reverse=True)
+# Ranking_Vitorias_historico.sort(key=lambda x:[rank_historico[x][0],rank_historico[x][2]],reverse=True)
+# Ranking_Pontos_historico.sort(key=lambda x:rank_historico[x][2],reverse=True)
 
 
-print(f'{Colors.CYAN} \n**** RESULTADOS DESDE O INICIO DOS TEMPOS****\n{Colors.RESET}')
-print(f'{Colors.CYAN} Ranking Por Número de Vitórias:{Colors.RESET}')
-for i in range(len(Ranking_Vitorias_historico)):
-    print(f'{Colors.CYAN}N° {i+1:2.0f} - Jogador: {Ranking_Vitorias_historico[i]:12s} - Vitórias {rank_historico[Ranking_Vitorias_historico[i]][0]:4.0f}{Colors.RESET}')
+# print(f'{Colors.CYAN} \n**** RESULTADOS DESDE O INICIO DOS TEMPOS****\n{Colors.RESET}')
+# print(f'{Colors.CYAN} Ranking Por Número de Vitórias:{Colors.RESET}')
+# for i in range(len(Ranking_Vitorias_historico)):
+#     print(f'{Colors.CYAN}N° {i+1:2.0f} - Jogador: {Ranking_Vitorias_historico[i]:12s} - Vitórias {rank_historico[Ranking_Vitorias_historico[i]][0]:4.0f}{Colors.RESET}')
 
-print()
-print(f'{Colors.CYAN}Ranking pontos:{Colors.RESET}')
-for i in range(len(Ranking_Pontos_historico)):
-    print(f'{Colors.CYAN}N° {i+1:2.0f} - Jogador: {Ranking_Pontos_historico[i]:12s} - Pontos {rank_historico[Ranking_Pontos_historico[i]][2]:5.0f}{Colors.RESET}')
+# print()
+# print(f'{Colors.CYAN}Ranking pontos:{Colors.RESET}')
+# for i in range(len(Ranking_Pontos_historico)):
+#     print(f'{Colors.CYAN}N° {i+1:2.0f} - Jogador: {Ranking_Pontos_historico[i]:12s} - Pontos {rank_historico[Ranking_Pontos_historico[i]][2]:5.0f}{Colors.RESET}')
 
 
