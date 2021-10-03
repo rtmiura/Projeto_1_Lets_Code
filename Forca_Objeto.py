@@ -31,7 +31,7 @@ def escolher_categoria_aleatoria():
     return categoria_palavra
 
 def print_categoria(categoria):
-    print(f'A catergoria vai ser {categoria}')
+    print(f'{Colors.BOLD}A catergoria vai ser{Colors.YELLOW} {categoria}')
 
 def sorteio_palavra(lista_palavras):    
     # print(conteudo_lista)
@@ -104,11 +104,11 @@ def Numero_Jogadores():
 def desenho_erros(tentativa,nome):
     print()
     time.sleep(1.0)
-    print(f'Forca de {nome}')
+    print(f'Forca de {nome}{Colors.RED}')
     print("  ________    ")
     print(" |/      |    ")
 
-    if(tentativa == 4):
+    if(tentativa == 4):        
         print(" |      (o)   ")
         print(" |       |    ")
         print(" |       |    ")
@@ -141,11 +141,12 @@ def desenho_erros(tentativa,nome):
     print(" |            ")
     print(" |__         ")
     print()
+    print(f'{Colors.BOLD}')
 
 
 def imprime_mensagem_vencedor(nome):
     time.sleep(1.0)
-    print(f"\nParabéns {nome}, você ganhou!")
+    print(f'\n{Colors.GREEN}Parabéns {nome}, você ganhou!{Colors.YELLOW}')
     print("       ___________      ")
     print("      '.=========.'     ")
     print("      .-\\:      /-.    ")
@@ -168,7 +169,7 @@ class Jogador(object):
         self.n_tentativas_para_vencer=0
         
     def tenta_nova_letra(self):
-        return input(f'{self.retorna_nome_jogador()} digite o teu palpite, uma letra da palavra secreta: ')
+        return input(f'{self.retorna_nome_jogador()}, digite o teu palpite, uma letra da palavra secreta: ')
         
     def retorna_nome_jogador(self):
         return self.name
@@ -425,19 +426,19 @@ class Forca(object):
         ###############################################################################    
         dicionario_categorias={"A":"Animais","F":"Frutas", "P":"Países"}
 
-        print(f'\nO jogo tem 3 níveis de dificildade:\n *No nível fácil você escolhe a categoria da palavra \n\n *No nível médio o jogo escolhe a categoria para você e\n te avisa sobre a categoria escolhida \n\n *No nível difícil o jogo sorteia a palavra mas\n não te avisa sobre a categoria escolhida \n')
+        print(f'\n{Colors.YELLOW}O jogo tem 3 níveis de dificildade:\n *No nível fácil você escolhe a categoria da palavra \n\n *No nível médio o jogo escolhe a categoria para você e\n te avisa sobre a categoria escolhida \n\n *No nível difícil o jogo sorteia a palavra mas\n não te avisa sobre a categoria escolhida \n')
         time.sleep(1)
-        dificuldade=input('Em qual dificuldade você quer jogar? Fácil(F), Médio(M) ou Díficil(D) ')
+        dificuldade=input(f'{Colors.BOLD}Em qual dificuldade você quer jogar?{Colors.RED} Fácil(F), Médio(M) ou Díficil(D) ')
         self.dificuldade=dificuldade.upper().strip()
         
         while self.dificuldade not in ("F","M","D"):
             time.sleep(1.0)
-            dificuldade=input('Em qual dificuldade você quer jogar? Fácil(F), Médio(M) ou Díficil(D) ')  
+            dificuldade=input(f'{Colors.BOLD}Em qual dificuldade você quer jogar?{Colors.RED} Fácil(F), Médio(M) ou Díficil(D) ')  
             self.dificuldade=dificuldade.upper().strip()
 
         if  self.dificuldade=="F":
             time.sleep(1.0)
-            categoria_palavra=input('Qual categoria de palavras você quer? Países(P), Animais(A) ou Frutas(F) ')
+            categoria_palavra=input(f'{Colors.BOLD}Qual categoria de palavras você quer?{Colors.RED} Países(P), Animais(A) ou Frutas(F){Colors.BOLD} ')
             categoria_palavra=categoria_palavra.upper().strip()
             
             
@@ -486,7 +487,7 @@ class Forca(object):
         self.Perdedores=[]
         
         
-        print('\n'+random.choice(comeco_jogo)+'\n')
+        print(f'\n{Colors.GREEN}{random.choice(comeco_jogo)}{Colors.BOLD}\n')
         time.sleep(1.0)
         
         if len(self.Lista_Jogadores)>1:
@@ -497,7 +498,7 @@ class Forca(object):
             time.sleep(1.0) 
 
         
-        print(f'Atenção! A palavra secreta tem {self.numero_letras} letras')
+        print(f'{Colors.RED}Atenção! A palavra secreta tem {self.numero_letras} letras{Colors.BOLD}')
         time.sleep(1.0)
         
         for Jogador in Lista_Jogadores:
@@ -562,12 +563,12 @@ class Forca(object):
         
         if self.numero_tentativas(Jogador_da_rodada.retorna_nome_jogador())>0:
             time.sleep(1.0)
-            print(f'\nÉ a vez de {Jogador_da_rodada.retorna_nome_jogador()} jogar:')
+            print(f'\n{Colors.BOLD}É a vez de {Jogador_da_rodada.retorna_nome_jogador()} jogar:')
             time.sleep(1.0)
             if self.dificuldade != 'D':
-                print(f'Palavra secreta: {self.Palavra_Display}\nCategoria: {self.categoria_palavra}')
+                print(f'Palavra secreta: {Colors.RED}{self.Palavra_Display}{Colors.BOLD}\nCategoria: {Colors.YELLOW}{self.categoria_palavra}{Colors.BOLD}')
             else:
-                 print(f'Palavra secreta: {self.Palavra_Display}')
+                 print(f'Palavra secreta: {Colors.RED}{self.Palavra_Display}{Colors.BOLD}')
             time.sleep(1.0)
             
             if type(Jogador_da_rodada).__name__=='Jogador':
@@ -606,16 +607,16 @@ class Forca(object):
                 
                 print(f'\nA palavra não contém {self.Novaletra}!')
                 time.sleep(1.0)
-                print(f'\n{Jogador_da_rodada.retorna_nome_jogador()} '+random.choice(errou_letra)+'\n')
+                print(f'\n{Colors.RED}{Jogador_da_rodada.retorna_nome_jogador()},{random.choice(errou_letra)}{Colors.BOLD}\n')
                 
                 time.sleep(1.0)
                 desenho_erros(self.Tentativas_Jogador[Jogador_da_rodada.retorna_nome_jogador()],Jogador_da_rodada.retorna_nome_jogador()) #desenha forca
                 self.atualiza_fila()
                 
                 if self.Tentativas_Jogador[Jogador_da_rodada.retorna_nome_jogador()]<1: #checa se perdeu
-                    print(f'{Jogador_da_rodada.retorna_nome_jogador()} perdeu !')
+                    print(f'{Colors.RED}{Jogador_da_rodada.retorna_nome_jogador()} perdeu !{Colors.BOLD}')
                     time.sleep(1.0)
-                    print('\n'+random.choice(perdeu_geral)+'\n')
+                    print(f'\n{Colors.RED}{random.choice(perdeu_geral)}{Colors.BOLD}\n')
                     time.sleep(1.0)
                     Jogador_da_rodada.atualiza_derrota()
                     self.Perdedores.append(self.Lista_Jogadores.pop())
@@ -634,7 +635,7 @@ class Forca(object):
             else: #jogador Acertou
                 time.sleep(1.0)
                 print(f'\nA palavra secreta contém a letra {self.Novaletra}!')
-                print(f'\n{Jogador_da_rodada.retorna_nome_jogador()} é simplesmente '+random.choice(msg_acertou_letra)+' do jogo da forca')
+                print(f'\n{Colors.GREEN}{Jogador_da_rodada.retorna_nome_jogador()} é simplesmente {random.choice(msg_acertou_letra)} do jogo da forca{Colors.BOLD}')
                 for i in range(len(self.Palavra_Comparar)): #Atualiza a letra na palavra escondida
                     if Vetor[i]:
                         Palavra_Comparar_list[i]=self.Novaletra
@@ -645,7 +646,7 @@ class Forca(object):
                 
             if self.Palavra_Comparar==self.Palavra_formatada: #checa se ganhou
                  time.sleep(1.0)
-                 print(f'{Jogador_da_rodada.retorna_nome_jogador()} ganhou! A palavra secreta é {self.palavra_secreta.upper()}!')
+                 print(f'{Colors.GREEN}{Jogador_da_rodada.retorna_nome_jogador()} ganhou! A palavra secreta é {self.palavra_secreta.upper()}!{Colors.BOLD}')
                  imprime_mensagem_vencedor(Jogador_da_rodada.retorna_nome_jogador())
                  Pontuacao=self.calcula_pontuacao(Jogador_da_rodada)
                  
@@ -713,7 +714,7 @@ while not Restart_jogo:
     N_jogadores=Numero_Jogadores()
     
     for n_player in range(N_jogadores):
-        Nome_jogador=input(f'\nEscreva o nome de um jogador que irá jogar rodada:{Colors.RESET} ')        
+        Nome_jogador=input(f'\nEscreva o nome de um jogador que irá jogar rodada: ')        
         
         if Nome_jogador in nome_jogadores_rodada:
             jogador_valid=False
@@ -725,7 +726,7 @@ while not Restart_jogo:
             
         
         if Nome_jogador not in dic_jogadores:
-            Tipo_jogador=input('Tipo de Jogador: Humano = 1 / Robô !=1 ')
+            Tipo_jogador=input(f'\n{Colors.BOLD}Tipo de Jogador: Humano = 1 / Robô !=1 ')
             if Tipo_jogador=='1':
                 dic_jogadores[Nome_jogador]=Jogador(Nome_jogador)
             else:            
